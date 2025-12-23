@@ -15,12 +15,12 @@
         android:layout_marginBottom="20dp"/>
 
     <Switch
-        android:id="@+id/drive_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="走行モードにする"
-        android:textSize="18sp"
-        android:layout_marginBottom="40dp"/>
+        android:id="@+id/send_msg_button"
+        android:layout_width="200dp"
+        android:layout_height="80dp"
+        android:text="テスト通知を送信"
+        android:layout_marginBottom="20dp"
+        android:backgroundTint="#4CAF50" />
 
     <Button
         android:id="@+id/settings_button"

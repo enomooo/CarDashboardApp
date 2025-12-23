@@ -17,7 +17,7 @@
         android:theme="@style/Theme.CarDashboardApp">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,8 +26,34 @@
         </activity>
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.SettingsActivity"
             android:exported="false" />
+
+        <service
+            android:name=".media.MyMediaService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="android.media.browsse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="androidx.car.app.minCarAiLevel"
+            android:value="1" />
     </application>
 
 </manifest>
+
+
+
+
+
+
+
+
+
+
+
+
+

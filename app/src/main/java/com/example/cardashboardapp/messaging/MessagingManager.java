@@ -1,4 +1,4 @@
-package com.example.cardashboardapp;
+package com.example.cardashboardapp.messaging;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -41,7 +41,18 @@ public class MessagingManager {
         }
     }
 
-    public void showMockNotification(String sender, String message) {
+    /**
+     * 擬似的なメッセージ受信通知をシステムに発行します。
+     * <p>
+     * {@link NotificationCompat.MessagingStyle} を使用することで、
+     * 車載器（Android Automotive OS）側で「読み上げ」や「音声返信」の
+     * メニューが自動的に表示される形式で通知を構成します。
+     * </p>
+     *
+     * @param sender メッセージの送信者名（例: "佐藤 太郎"）
+     * @param message 受信したメッセージの本文内容
+     */
+    public void showMockNotification(String sender, String message, boolean isDriving) {
         Person user = new Person.Builder().setName(sender).build();
 
         NotificationCompat.MessagingStyle style = new NotificationCompat.MessagingStyle(user)
@@ -51,6 +62,13 @@ public class MessagingManager {
                 .setSmallIcon(android.R.drawable.ic_dialog_email)
                 .setStyle(style)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        if (!isDriving) {
+            builder.addAction(android.R.drawable.ic_menu_send, "返信", null);
+            builder.addAction(android.R.drawable.ic_menu_agenda, "詳細を表示", null);
+        } else {
+            builder.addAction(android.R.drawable.ic_input_add, "了承", null);
+        }
 
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (manager != null) {

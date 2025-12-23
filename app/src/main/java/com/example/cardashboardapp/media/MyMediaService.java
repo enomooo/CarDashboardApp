@@ -1,10 +1,15 @@
-package com.example.cardashboardapp;
+package com.example.cardashboardapp.media;
 
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.os.Bundle;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +24,9 @@ import java.util.List;
 public class MyMediaService extends MediaBrowserServiceCompat{
 
     private MediaSessionCompat mediaSession;
+    private MediaPlayer mediaPlayer;
     private static final String MY_MEDIA_ROOT_ID = "media_root_id";
+    private static final String TAG = "MyMediaService";
 
     /**
      * MediaSessionの初期化
@@ -28,24 +35,64 @@ public class MyMediaService extends MediaBrowserServiceCompat{
     public void onCreate() {
         super.onCreate();
 
+        // MediaPlayerの初期化
+        mediaPlayer = new MediaPlayer();
+
         // MediaSessionの初期化（再生・停止などの操作を受け付ける窓口）
         mediaSession = new MediaSessionCompat(this, "MyMediaService");
         setSessionToken(mediaSession.getSessionToken());
 
-        // 操作を受け取るコールバックの設定
+        // 「再生」という命令を自分に送るためのチケット(Intent)を作る
+        Intent playIntent = new Intent(this, MyMediaService.class);
+        playIntent.setAction("ACTION_PLAY");
+        PendingIntent playPendingIntent = PendingIntent.getService(
+                this, 0,playIntent, PendingIntent.FLAG_IMMUTABLE);
+
+        // 「一時停止」という命令を自分に送るためのチケットを作る
+        Intent pauseIntent = new Intent(this, MyMediaService.class);
+        pauseIntent.setAction("ACTION_PAUSE");
+        PendingIntent pausePendingIntent = PendingIntent.getService(
+                this, 1, pauseIntent, PendingIntent.FLAG_IMMUTABLE);
+
+        mediaSession.setMediaButtonReceiver(playPendingIntent);
+
+        // 車載側からの操作を受け取るコールバックの設定
         mediaSession.setCallback(new MediaSessionCompat.Callback() {
             @Override
             public void onPlay() {
-                updatePlaybackState(PlaybackStateCompat.STATE_PLAYING);
+                handlePlayMusic();
             }
 
             @Override
             public void onPause() {
-                updatePlaybackState(PlaybackStateCompat.STATE_PAUSED);
+                handlePauseMusic();
+            }
+
+            @Override
+            public void onSkipToNext() {
+                Log.d(TAG, "次へボタンが押されました");
             }
         });
 
         // 初期状態（停止）を設定
+        updatePlaybackState(PlaybackStateCompat.STATE_PAUSED);
+    }
+
+    /**
+     *実際の再生処理ロジック
+     */
+    private void handlePlayMusic() {
+        Log.d(TAG, "再生を開始します");
+        // 疑似のため音楽のロードは無し！！
+        updatePlaybackState(PlaybackStateCompat.STATE_PLAYING);
+    }
+
+    /**
+     * 実際の一時停止処理ロジック
+     */
+    private void handlePauseMusic() {
+        Log.d(TAG, "一時停止します");
+
         updatePlaybackState(PlaybackStateCompat.STATE_PAUSED);
     }
 
@@ -77,6 +124,20 @@ public class MyMediaService extends MediaBrowserServiceCompat{
 
         result.sendResult(mediaItems);
     }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null && intent.getAction() != null) {
+            String action = intent.getAction();
+            if ("ACTION_PLAY".equals(action)) {
+                handlePlayMusic();
+            } else if ("ACTION_PAUSE".equals(action)) {
+                handlePauseMusic();
+            }
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
+
 
     /**
      * 再生アイテム（MediaItem）を生成します。
@@ -113,6 +174,10 @@ public class MyMediaService extends MediaBrowserServiceCompat{
      */
     @Override
     public void onDestroy() {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
         mediaSession.release();
         super.onDestroy();
     }

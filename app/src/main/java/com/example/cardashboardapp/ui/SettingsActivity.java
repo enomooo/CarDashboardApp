@@ -1,4 +1,4 @@
-package com.example.cardashboardapp;
+package com.example.cardashboardapp.ui;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,6 +7,9 @@ import android.widget.Switch;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.cardashboardapp.R;
+import com.example.cardashboardapp.ui.adapter.SettingsAdapter;
 
 import java.util.Arrays;
 import java.util.List;
