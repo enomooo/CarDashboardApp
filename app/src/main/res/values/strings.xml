@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CarDashboardApp</string>
+    <string name="settings_title">車両設定メニュー</string>
+    <string name="safety_lock_label">走行中の操作制限を有効にする</string>
 </resources>
