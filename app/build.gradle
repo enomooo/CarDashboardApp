@@ -4,9 +4,7 @@ plugins {
 
 android {
     namespace 'com.example.cardashboardapp'
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.example.cardashboardapp"
@@ -16,6 +14,12 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
     }
 
     buildTypes {
@@ -32,6 +36,7 @@ android {
 }
 
 dependencies {
+    // アプリ本体のライブラリ
     implementation "androidx.car.app:app:1.4.0"
     implementation libs.appcompat
     implementation libs.material
@@ -39,14 +44,18 @@ dependencies {
     implementation libs.constraintlayout
     implementation "androidx.appcompat:appcompat:1.6.1"
     implementation "com.google.android.material:material:1.9.0"
-
     implementation libs.media
 
-    testImplementation libs.junit
+    // テスト用ライブラリ
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "org.robolectric:robolectric:4.10.3"
+    testImplementation "androidx.test:core:1.5.0"
+    testImplementation "androidx.car.app:app-testing:1.4.0"
+
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 
-    // 車載用ライブラリの参照
+    // 車載用ライブラリ (android.car.jar)
     compileOnly files(android.getSdkDirectory().getAbsolutePath()
             + "/platforms/"
             + android.compileSdkVersion
